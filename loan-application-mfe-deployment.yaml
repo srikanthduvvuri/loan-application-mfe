@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loan-application-mfe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loan-application-mfe
+  template:
+    metadata:
+      labels:
+        app: loan-application-mfe
+    spec:
+      containers:
+      - name: loan-application-mfe
+        image: srikanth8/loan-application-mfe:latest
+        ports:
+        - containerPort: 3001
+        env:
+        - name: REACT_APP_BACKEND_URL
+          value: "http://loan-application-backend-service.default.svc.cluster.local:80"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: loan-application-mfe-service
+spec:
+  selector:
+    app: loan-application-mfe
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3001
+  type: LoadBalancer
